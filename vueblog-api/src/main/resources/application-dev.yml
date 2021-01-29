@@ -1,0 +1,24 @@
+# port
+server:
+  port: 9010
+
+# about port
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/vueblog?useSSL=false&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: jj910712
+
+# mybatis-plus
+mybatis-plus:
+  mapper-locations: classpath:mappers/*.xml
+  type-aliases-package: com.vue.api.entity
+  global-config:
+    db-config:
+      id-type: auto
+  # 是否将sql打印到控制面板
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+

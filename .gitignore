@@ -22,6 +22,7 @@
 **/.idea/**
 **/target/**
 **/node_modules/**
+**/logback/**
 
 **/*.iml
 

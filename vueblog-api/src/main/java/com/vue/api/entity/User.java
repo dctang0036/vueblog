@@ -3,6 +3,8 @@ package com.vue.api.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import lombok.Data;
+
 import java.time.LocalDateTime;
 import java.io.Serializable;
 
@@ -15,6 +17,7 @@ import java.io.Serializable;
  * @since 2021-01-29
  */
 @TableName("m_user")
+@Data
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -29,6 +32,8 @@ public class User implements Serializable {
     private String email;
 
     private String password;
+
+    private String salt;
 
     private Integer status;
 

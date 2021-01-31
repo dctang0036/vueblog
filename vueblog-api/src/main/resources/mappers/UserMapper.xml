@@ -9,6 +9,7 @@
         <result column="avatar" property="avatar" />
         <result column="email" property="email" />
         <result column="password" property="password" />
+        <result column="salt" property="salt" />
         <result column="status" property="status" />
         <result column="created" property="created" />
         <result column="last_login" property="lastLogin" />

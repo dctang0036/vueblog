@@ -9,6 +9,21 @@ spring:
     url: jdbc:mysql://localhost:3306/vueblog?useSSL=false&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
     username: root
     password: jj910712
+  redis:
+    host: 127.0.0.1
+    database: 0  # redis数据库
+    port: 6379
+    password: redis
+    timeout: 30000s
+    lettuce:
+      shutdown-timeout: 100ms
+      pool:
+        max-active: 8
+        max-wait: 60000ms
+        max-idle: 8
+        min-idle: 0
+  cache:
+    type: redis
 
 # mybatis-plus
 mybatis-plus:
@@ -21,4 +36,9 @@ mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
+
+# token 过期时间设置为30分钟
+jwt:
+  redis:
+    expire: 1800000
 

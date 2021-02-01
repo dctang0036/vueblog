@@ -55,7 +55,7 @@ public class ShiroConfig {
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap<String, String>();
 
         // 设置默认登陆的URL，身份认证失败后会访问改URL
-        shiroFilterFactoryBean.setLoginUrl("/login");
+        shiroFilterFactoryBean.setLoginUrl("/sys/login");
         // 设置认证成功之后要跳转的连接
         shiroFilterFactoryBean.setSuccessUrl("/success");
         // 设置未授权界面，权限认证失败后会访问改URL

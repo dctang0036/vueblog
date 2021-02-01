@@ -97,13 +97,13 @@ public class ShiroRealm extends AuthorizingRealm {
             throw new AuthenticationException("用户不存在!");
         }
 
-        // 检验token是否超时失效 & 账号密码错误
+        // 检验token是否超时失效 & 刷新token
         if (!jwtTokenRefresh(token, username, user.getPassword())) {
             throw new AuthenticationException("Token失效请重新登录!");
         }
 
         // 判断用户状态
-        if (!"0".equals(user.getStatus())) {
+        if (user.getStatus() != 0) {
             throw new AuthenticationException("账号已被删除,请联系管理员!");
         }
 
@@ -116,11 +116,9 @@ public class ShiroRealm extends AuthorizingRealm {
      * 1、登录成功后将用户的JWT生成的Token作为k、v存储到cache缓存里面
      * 2、当该用户再次请求时，通过JWTFilter层层校验之后会进入到doGetAuthenticationInfo进行身份认证
      * 3、当该用户再次请求，token值还在生命周期内，则会通过重新PUT的方式k、v都为Token值，缓存中的token值生命周期时间重新计算
-     * 4、当该用户再次请求，token值已经超时，但该token对应cache中的k、v还是存在，则表示该用户一直在操作只是JWT的token失效了，
-     *    程序会给token对应的k映射的v值重新生成JWTToken并覆盖v值，该缓存生命周期重新计算
-     * 5、当该用户再次请求，token值已经超时，并在cache中不存在对应的k、v，则表示该用户账户空闲超时，返回用户信息已失效，请重新登录。
-     * 6、每次当返回为true情况下，都会给Response的Header中设置Authorization，该Authorization映射的v为cache对应的v值。
-     * 7、注：当前端接收到Response的Header中的Authorization值会存储起来，作为以后请求token使用
+     * 4、当该用户再次请求，token值已经超时，并在cache中不存在对应的k、v，则表示该用户账户空闲超时，返回用户信息已失效，请重新登录。
+     * 5、每次当返回为true情况下，都会给Response的Header中设置Authorization，该Authorization映射的v为cache对应的v值。
+     * 6、注：当前端接收到Response的Header中的Authorization值会存储起来，作为以后请求token使用
      *
      * @param token
      * @param userName
@@ -131,18 +129,28 @@ public class ShiroRealm extends AuthorizingRealm {
         String cacheToken = String.valueOf(redisUtil.get(CommonConstant.PREFIX_USER_TOKEN + token));
 
         if (CommonUtils.isNotEmpty(cacheToken)) {
-            if (!jwtUtil.verify(cacheToken, userName, passWord)) {   // token过时了
+
+            /*if (!jwtUtil.verify(cacheToken, userName, passWord)) {   // token过时了
                 String newAuthorication = jwtUtil.sign(userName, passWord);
                 redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, newAuthorication);
                 redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, jwtUtil.EXPIRE_TIME / 1000);
             } else {
                 redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, cacheToken);
                 redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, jwtUtil.EXPIRE_TIME / 1000);
-            }
-            return true;
-        }
+            }*/
 
-        return false;
+            // 判断token是否正确
+            if (jwtUtil.verify(cacheToken, userName, passWord)) {
+                redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, cacheToken);
+                redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, jwtUtil.EXPIRE_TIME / 1000);
+                return true;
+            } else {
+                // token异常（失效、被篡改）
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
 

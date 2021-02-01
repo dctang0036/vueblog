@@ -11,6 +11,7 @@ import com.vue.api.utils.JwtUtil;
 import com.vue.api.utils.PasswordUtil;
 import com.vue.api.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;

@@ -40,7 +40,8 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
                 return true;
             } catch (Exception e) {
                 //token 错误
-                responseError(response, e.getMessage());
+                throw new AuthenticationException(e.getMessage());
+                // 将错误信息输入到response
             }
         }
         //如果请求头不存在 Token，则可能是执行登陆操作或者是游客状态访问，无需检查 token，直接返回 true
@@ -56,7 +57,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
     @Override
     protected boolean isLoginAttempt(ServletRequest request, ServletResponse response) {
         HttpServletRequest req = (HttpServletRequest) request;
-        String token = req.getHeader("Token");
+        String token = req.getHeader(CommonConstant.ACCESS_TOKEN);
         return token != null;
     }
 
@@ -76,6 +77,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
 
         // 提交给realm进行登入，如果错误他会抛出异常并被捕获
         getSubject(request, response).login(jwtToken);
+
         // 如果没有抛出异常则代表登入成功，返回true
         return true;
     }
@@ -113,7 +115,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
             HttpServletResponse httpServletResponse = (HttpServletResponse) response;
             //设置编码，否则中文字符在重定向时会变为空字符串
             message = URLEncoder.encode(message, "UTF-8");
-            httpServletResponse.sendRedirect("/unauthorized/" + message);
+            // httpServletResponse.sendRedirect("/unauthorized/" + message);
         } catch (IOException e) {
 //            logger.error(e.getMessage());
             System.out.println(e.getMessage());

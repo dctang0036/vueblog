@@ -11,17 +11,16 @@ import com.vue.api.utils.JwtUtil;
 import com.vue.api.utils.PasswordUtil;
 import com.vue.api.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
 
 @Controller
 @RequestMapping("/sys")
@@ -80,6 +79,7 @@ public class LonginController {
             return Result.error("退出登录失败！");
         }
         String username = jwtUtil.getUsername(token);
+
         User sysUser = userService.getUserByName(username);
         if (sysUser != null) {
             log.info(" 用户名：" + username + " ,退出登陆！");
@@ -92,13 +92,6 @@ public class LonginController {
         } else {
             return Result.error("无效的token");
         }
-    }
-
-    @ResponseBody
-    @RequestMapping(value = "/unauthorized", method = RequestMethod.GET)
-    public Result authorized(HttpServletRequest request, HttpServletResponse response) {
-        log.info("权限不够！");
-        return Result.error("权限不够！");
     }
 
     private Result<JSONObject> userInfo(User user, Result<JSONObject> result) {

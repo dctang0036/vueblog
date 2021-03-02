@@ -1,6 +1,8 @@
 package com.vue.api.config.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vue.api.constant.CommonConstant;
+import com.vue.api.constant.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authz.UnauthorizedException;
@@ -13,6 +15,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URLEncoder;
 
 /**
@@ -39,11 +42,13 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
                 executeLogin(request, response);
                 return true;
             } catch (Exception e) {
-                //token 错误
+                // e.printStackTrace();
+                responseError(response, e.getMessage());
+                // return false;  // 如果 return false 会执行两次 executeLogin 方法
                 throw new AuthenticationException(e.getMessage());
-                // 将错误信息输入到response
             }
         }
+
         //如果请求头不存在 Token，则可能是执行登陆操作或者是游客状态访问，无需检查 token，直接返回 true
         return true;
     }
@@ -106,19 +111,36 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
     }
 
     /**
-     * 将非法请求跳转到 /unauthorized/**
+     * 将错误信息输入到response
      * @param response
      * @param message
      */
     private void responseError(ServletResponse response, String message) {
-        try {
+        /*try {
             HttpServletResponse httpServletResponse = (HttpServletResponse) response;
             //设置编码，否则中文字符在重定向时会变为空字符串
             message = URLEncoder.encode(message, "UTF-8");
-            // httpServletResponse.sendRedirect("/unauthorized/" + message);
+            httpServletResponse.sendRedirect("/sys/unauthorized/" + message);
         } catch (IOException e) {
 //            logger.error(e.getMessage());
             System.out.println(e.getMessage());
+        }*/
+        // 重定向和 isAccessAllowed 方法 return false 冲突
+
+        HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+        httpServletResponse.setStatus(401);
+        httpServletResponse.setCharacterEncoding("UTF-8");
+        httpServletResponse.setContentType("application/json;charset=UTF-8");
+        try {
+            String rj = new ObjectMapper().writeValueAsString(Result.error(message));
+            // httpServletResponse.getWriter().append(rj);
+            httpServletResponse.reset();
+            OutputStream outputStream = httpServletResponse.getOutputStream();
+            outputStream.write(rj.getBytes());
+            outputStream.flush();
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

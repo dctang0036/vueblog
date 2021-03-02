@@ -71,6 +71,7 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/**/*.jpg", "anon");
         filterChainDefinitionMap.put("/**/*.png", "anon");
         filterChainDefinitionMap.put("/**/*.ico", "anon");
+        // filterChainDefinitionMap.put("/sys/unauthorized/**", "anon"); // 异常接口排除
 
         // filterChainDefinitionMap.put("/user/add", "perms[\"user:addd\"]");
 

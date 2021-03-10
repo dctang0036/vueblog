@@ -29,7 +29,8 @@ const routes = [
   },
   {
     path: '/blog/add', // 注意放在 path: '/blog/:blogId'之前
-    // name: 'BlogAdd',
+    name: 'BlogAdd',
+    // 需要登陆才能访问
     meta: {
       requireAuth: true
     },

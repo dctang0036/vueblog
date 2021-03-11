@@ -35,10 +35,10 @@
             getBlog() {
                 const blogId = this.$route.params.blogId;
                 const _this = this;
-                this.$axios.get('/blog/'+blogId).then((res) => {
+                this.$axios.get('/blog/detail/'+blogId).then((res) => {
                     console.log(res);
-                    console.log(res.data.data);
-                    _this.blog = res.data.data;
+                    console.log(res.data.result);
+                    _this.blog = res.data.result;
                     var MarkdownIt = require('markdown-it'),
                         md = new MarkdownIt();
                     var result = md.render(_this.blog.content);

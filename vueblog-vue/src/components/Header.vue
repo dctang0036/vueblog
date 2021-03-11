@@ -34,9 +34,10 @@
         methods: {
             logout() {
                 const _this = this;
-                _this.$axios.get("/logout", {
+                // _this.$axios.defaults.headers.common["Access-Token"] = localStorage.getItem("token");
+                _this.$axios.post("/sys/logout", {},{
                     headers: {
-                        "Authorization": localStorage.getItem("token")
+                        "Access-Token": localStorage.getItem("token")
                     }
                 }).then(res => {
                     _this.$store.commit("REMOVE_INFO")
@@ -45,9 +46,10 @@
             }
         },
         created() {
-            if(this.$store.getters.getUser.username) {
-                this.user.username = this.$store.getters.getUser.username
-                this.user.avatar = this.$store.getters.getUser.avatar
+            var userInfo = JSON.parse(this.$store.getters.getUser);
+            if(userInfo.username) {
+                this.user.username = userInfo.username
+                this.user.avatar = userInfo.avatar
                 this.hasLogin = true
             }
         }

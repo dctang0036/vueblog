@@ -11,12 +11,12 @@
             <el-main>
                 <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px"
                          class="demo-ruleForm">
-                    <el-form-item label="用户名" prop="username">
-                        <el-input type="text" maxlength="12" v-model="ruleForm.username"></el-input>
+                    <el-form-item label="用户名" prop="userName">
+                        <el-input type="text" maxlength="12" v-model="ruleForm.userName"></el-input>
                     </el-form-item>
                     <el-form-item label="密码" prop="password">
                         <el-input type="password" v-model="ruleForm.password" autocomplete="off"></el-input>
-                    </el-form-item>npm
+                    </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
                         <el-button @click="resetForm('ruleForm')">重置</el-button>
@@ -41,13 +41,13 @@
             return {
                 ruleForm: {
                     password: '111111',
-                    username: 'markerhub'
+                    userName: 'markerhub'
                 },
                 rules: {
                     password: [
                         { required: true, message: '请选择密码', trigger: 'change' }
                     ],
-                    username: [
+                    userName: [
                         {required: true, message: '请输入用户名', trigger: 'blur'},
                         {min: 3, max: 12, message: '长度在 3 到 12 个字符', trigger: 'blur'}
                     ]
@@ -55,15 +55,17 @@
             };
         },
         methods: {
-            submitForm(formName) {
-                const _this = this;
-                this.$refs[formName].validate((valid) => {
+            submitForm(ruleForm) {
+
+                this.$refs[ruleForm].validate((valid) => {
                     if(valid) {
                         // 提交逻辑
-                        this.$axios.post('/login', this.ruleForm)
+                        const _this = this;
+                        this.$axios.post('/sys/login', this.ruleForm)
                         .then((res) => {
-                            const token = res.headers['authorization'];
-                            const userInfo = res.data.data;
+                            // const token = res.headers['authorization'];
+                            const token = res.data.result.token;
+                            const userInfo = res.data.result.userInfo;
                             _this.$store.commit('SET_TOKEN', token);
                             _this.$store.commit('SET_USERINFO', userInfo);
                             _this.$router.push("/blogs");
